@@ -12,6 +12,7 @@ Files and Notes:
 ================
 
 !!!IMPORTANT!!!
+---------------
 The algorithm uses the included directory structure for it's usuage of file-based storage.  Removing
 elements from the folder directory structre (i.e. removing run_data or reference_genomes) will result
 in the failure of the algorithm.
@@ -35,7 +36,7 @@ provided for convienance and clarity of use.  For example, to run a comparision 
 genome of length 10k with read length 100:
 
 	import Test
-	trial(10000,100)
+	Test.trial(10000,100)
 
 This gives the following example output:
 
