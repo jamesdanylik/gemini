@@ -93,17 +93,14 @@ def readsOverlap(last_read, next_read):
 			return False
 
 def readToSNPS(reference,read,offset):
-	if reference == read:
-		return []
-	else:
-		length = len(read)
-		reference = list(reference)
-		read = list(read)
-		snps = []
-		for index in range(length):
-			if read[index] != reference[index]:
-				snps.append( (index+offset,read[index]) )
-		return snps
+	length = len(read)
+	reference = list(reference)
+	read = list(read)
+	snps = []
+	for index in range(length):
+		if read[index] != reference[index]:
+			snps.append( (index+offset,read[index]) )
+	return snps
 
 def SNPSToHaplotypes(read_in):
 	reads = read_in[:]
@@ -179,11 +176,7 @@ def withinDistance(cache,key,distance):
 	locations = sorted(set(locations))
 	return locations
 
-def makeCache(filename,cacheLen):
-	reference_genome_path = 'reference_genomes/'
-	reference_genome_path += filename
-	with open(reference_genome_path,'r') as reference_content:
-		reference_genome = reference_content.read()
+def makeCache(reference_genome,cacheLen):
 	reference_length = len(reference_genome)
 	cache = defaultdict(list)
 	for index in range(reference_length-cacheLen+1):
@@ -206,7 +199,7 @@ def rTH(filename,cache_len):
 	reference_length = len(reference_genome)
 	reads = getReads(filename)
 	read_length = len(reads[0])	
-	cache = makeCache(filename,cache_len)
+	cache = makeCache(reference_genome,cache_len)
 	snps = []
 	for read in reads:
 		substring = read[:cache_len]
@@ -228,21 +221,20 @@ def rTH(filename,cache_len):
 			haplotype1_snps = sorted(set(haplotype1_snps)|set(read))
 	reference_genome = list(reference_genome)
 	hap0_file = open(output_hap0,'w')
-	next_snp = haplotype0_snps.pop(0)
+	hap0_next = haplotype0_snps.pop(0)
+	hap1_file = open(output_hap1,'w')
+	hap1_next = haplotype1_snps.pop(0)
 	for index in range(reference_length):
-		if index == next_snp[0]:
-			hap0_file.write(next_snp[1])
+		if index == hap0_next[0]:
+			hap0_file.write(hap0_next[1])
 			if len(haplotype0_snps) != 0:
-				next_snp = haplotype0_snps.pop(0)
+				hap0_next = haplotype0_snps.pop(0)
 		else:
 			hap0_file.write(reference_genome[index])
-	hap1_file = open(output_hap1,'w')
-	next_snp = haplotype1_snps.pop(0)
-	for index in range(reference_length):
-		if index == next_snp[0]:
-			hap1_file.write(next_snp[1])
+		if index == hap1_next[0]:
+			hap1_file.write(hap1_next[1])
 			if len(haplotype1_snps) != 0:
-				next_snp = haplotype1_snps.pop(0)
+				hap1_next = haplotype1_snps.pop(0)
 		else:
 			hap1_file.write(reference_genome[index])
 	elapsed_time = time.time() - start_time

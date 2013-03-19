@@ -52,6 +52,9 @@ def makeReads(filename, read_length):
 	haplotype1_path = haplotype0_path
 	haplotype0_path += '.case0'
 	haplotype1_path += '.case1'
+	read_path = 'run_data/'
+	read_path += filename
+	read_path += '.reads'
 	with open(haplotype0_path,'r') as haplotype0_content:
 		haplotype0 = haplotype0_content.read()
 	with open(haplotype1_path,'r') as haplotype1_content:
@@ -59,10 +62,13 @@ def makeReads(filename, read_length):
 	haplotype_length = len(haplotype0)
 	reads=[]
 	for genome_index in range(0,haplotype_length,read_length):
-		reads.append(haplotype0[genome_index:genome_index+read_length-1])
-		reads.append(haplotype1[genome_index:genome_index+read_length-1])
+		reads.append(haplotype0[genome_index:genome_index+read_length])
+		reads.append(haplotype1[genome_index:genome_index+read_length])
 	for genome_index in range(read_length/2,haplotype_length-read_length,read_length):
-		reads.append(haplotype0[genome_index:genome_index+read_length-1])
-		reads.append(haplotype1[genome_index:genome_index+read_length-1])
+		reads.append(haplotype0[genome_index:genome_index+read_length])
+		reads.append(haplotype1[genome_index:genome_index+read_length])
 	random.shuffle(reads)
-	return reads
+	read_file = open(read_path,'w')
+	for read in reads:
+		read_file.write(read)
+		read_file.write('\n')
